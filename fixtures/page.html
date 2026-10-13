@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>pestctrl fixture</title>
+    <style>
+      body {
+        font: 16px/1.4 sans-serif;
+        margin: 24px;
+      }
+      main {
+        display: flex;
+        gap: 16px;
+      }
+      .card {
+        padding: 12px;
+      }
+      .labeled::before {
+        content: "pseudo";
+        margin-right: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>pestctrl fixture</h1>
+      <nav>
+        <a href="#section">Section</a>
+      </nav>
+    </header>
+    <main>
+      <article>
+        <h2>Article</h2>
+        <section id="section">
+          <p class="labeled">A paragraph inside a section.</p>
+          <div class="card">
+            <span>span</span>
+            <ul>
+              <li>one</li>
+              <li>two</li>
+            </ul>
+          </div>
+          <blockquote>A quote.</blockquote>
+          <pre><code>const x = 1;</code></pre>
+          <figure>
+            <svg width="48" height="24" aria-label="swatch">
+              <rect width="48" height="24" fill="#eee" />
+            </svg>
+            <figcaption>A figure.</figcaption>
+          </figure>
+          <form>
+            <label>
+              Name
+              <input type="text" value="ada" />
+            </label>
+            <button type="button">Button</button>
+          </form>
+          <table>
+            <thead>
+              <tr>
+                <th>Col</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Cell</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </article>
+      <aside>
+        <p>Aside.</p>
+      </aside>
+    </main>
+    <iframe title="nested" src="frame.html" width="320" height="120"></iframe>
+    <div id="shadow-host"></div>
+    <footer>Footer.</footer>
+    <script>
+      const host = document.querySelector("#shadow-host");
+      const root = host.attachShadow({ mode: "open" });
+      root.innerHTML = "<p id='shadow-p'>Open shadow paragraph.</p>";
+    </script>
+  </body>
+</html>
