@@ -10,7 +10,9 @@ Outlines use the CSS `outline` property, so the page's box model stays as it was
 
 ## Install
 
-`bun install`, then `bun run build`. In Chrome, open `chrome://extensions`, turn on Developer mode, choose Load unpacked, and select the `extension/` directory.
+Download `pestctrl-<version>.zip` from [Releases](https://github.com/tomholford/pestctrl/releases) and unzip it. In Chrome, open `chrome://extensions`, turn on Developer mode, choose Load unpacked, and select the unzipped folder.
+
+To build from source, run `bun install`, then `bun run build`, and load the `extension/` directory the same way.
 
 The source of the service worker is TypeScript in `src/`. The build writes `extension/background.js`. Chrome loads that file. It is generated and gitignored.
 
@@ -34,11 +36,23 @@ There is no popup, keyboard shortcut, hover inspector, or settings page.
 bun test
 bun run typecheck
 bun run build
+bun run package
 ```
+
+`bun run package` writes `dist/pestctrl-<version>.zip` with `manifest.json` at the root of the archive.
 
 `fixtures/page.html` is a static page for a manual check: nested regions, an iframe, and an open shadow root.
 
-Publishing and CI are not set up yet. A later release job can zip `extension/` after `bun run build`.
+## Release
+
+Bump `version` in `extension/manifest.json` and the same string in `test/manifest.test.ts`. Merge that to `master`, then tag the commit. The tag has to match the manifest version:
+
+```sh
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+The release workflow runs the tests, builds the zip, and attaches it to the GitHub release. That zip is also the package to upload to the Chrome Web Store. Store upload is not set up.
 
 ## Credit
 

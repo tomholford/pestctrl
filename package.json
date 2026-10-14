@@ -2,8 +2,10 @@
   "name": "pestctrl",
   "private": true,
   "type": "module",
+  "packageManager": "bun@1.4.3",
   "scripts": {
     "build": "bun build src/background.ts --outfile extension/background.js --target browser --format esm",
+    "package": "bun run build && bun scripts/package.ts",
     "typecheck": "tsc --noEmit",
     "test": "bun test"
   },
