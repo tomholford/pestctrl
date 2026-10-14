@@ -4,6 +4,8 @@ Outline every element on the current page.
 
 Click the toolbar icon. Each element gets a colored outline. Click again and the outlines go away. A reload clears them too.
 
+![Hacker News with outlines on](images/hacker-news.png)
+
 Outlines use the CSS `outline` property, so the page's box model stays as it was. Colors follow the element type: a `div` and a `p` are different colors, and anything not in the named list uses one fallback color.
 
 ## Install
