@@ -1,0 +1,68 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Typecheck
+        run: bun run typecheck
+
+      - name: Test
+        run: bun test
+
+      - name: Package
+        run: bun run package
+
+      - name: Check the tag against the manifest
+        id: version
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME#v}"
+          if ! [[ "$TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Tag ${GITHUB_REF_NAME} must look like v1.2.3"
+            exit 1
+          fi
+          MANIFEST="$(bun -e 'const manifest = await Bun.file("extension/manifest.json").json(); process.stdout.write(manifest.version)')"
+          if [ "$TAG" != "$MANIFEST" ]; then
+            echo "::error::Tag v${TAG} does not match manifest.json version ${MANIFEST}"
+            exit 1
+          fi
+          ZIP="dist/pestctrl-${MANIFEST}.zip"
+          test -f "$ZIP"
+          unzip -Z1 "$ZIP" | grep -qx "manifest.json"
+          echo "version=${MANIFEST}" >> "$GITHUB_OUTPUT"
+
+      - name: Publish the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          TAG="v${VERSION}"
+          ZIP="dist/pestctrl-${VERSION}.zip"
+          cat > notes.md <<EOF
+          Download \`pestctrl-${VERSION}.zip\` and unzip it. In Chrome, open \`chrome://extensions\`, turn on Developer mode, choose Load unpacked, and select the unzipped folder.
+
+          The same zip is the package to upload to the Chrome Web Store.
+          EOF
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "$ZIP" --clobber
+            gh release edit "$TAG" --title "pestctrl ${TAG}" --notes-file notes.md
+          else
+            gh release create "$TAG" "$ZIP" --title "pestctrl ${TAG}" --notes-file notes.md --verify-tag
+          fi
